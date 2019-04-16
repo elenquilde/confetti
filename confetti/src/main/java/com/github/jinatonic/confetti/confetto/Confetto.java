@@ -31,6 +31,10 @@ import android.view.animation.Interpolator;
  * All of the configured states are in milliseconds, e.g. pixels per millisecond for velocity.
  */
 public abstract class Confetto {
+
+    public interface PositionCalculationCustomization {
+        void updatePosition(float[] position, Confetto confetto);
+    }
     private static final int MAX_ALPHA = 255;
     private static final long RESET_ANIMATION_INITIAL_DELAY = -1;
 
@@ -45,6 +49,7 @@ public abstract class Confetto {
             accelerationX, accelerationY;
     private Float targetVelocityX, targetVelocityY;
     private Long millisToReachTargetVelocityX, millisToReachTargetVelocityY;
+    private PositionCalculationCustomization positionCalculationCustomization;
     // Configured rotation states
     private float initialRotation, initialRotationalVelocity, rotationalAcceleration;
     private Float targetRotationalVelocity;
@@ -239,6 +244,7 @@ public abstract class Confetto {
         initialVelocityX = initialVelocityY = 0f;
         accelerationX = accelerationY = 0f;
         targetVelocityX = targetVelocityY = null;
+        positionCalculationCustomization = null;
         millisToReachTargetVelocityX = millisToReachTargetVelocityY = null;
 
         initialRotation = 0f;
@@ -300,6 +306,14 @@ public abstract class Confetto {
                     millisToReachTargetRotationalVelocity, targetRotationalVelocity);
             currentRotation = workPairs[0];
             currentRotationalVelocity = workPairs[1];
+
+
+            if(positionCalculationCustomization != null) {
+                final float [] position = new float[] { currentX, currentY };
+                positionCalculationCustomization.updatePosition(position, this);
+                currentX = position[0];
+                currentY = position[1];
+            }
 
             if (fadeOutInterpolator != null) {
                 final float interpolatedTime =
@@ -441,6 +455,10 @@ public abstract class Confetto {
 
     public void setFadeOut(Interpolator fadeOutInterpolator) {
         this.fadeOutInterpolator = fadeOutInterpolator;
+    }
+
+    public void setPositionCalculationCustomization(PositionCalculationCustomization positionCalculationCustomization) {
+        this.positionCalculationCustomization = positionCalculationCustomization;
     }
 
     // endregion
