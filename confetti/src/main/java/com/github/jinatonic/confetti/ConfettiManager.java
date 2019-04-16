@@ -73,6 +73,7 @@ public class ConfettiManager {
     private float rotationalAcceleration, rotationalAccelerationDeviation;
     private Float targetRotationalVelocity, targetRotationalVelocityDeviation;
     private long ttl;
+    private Confetto.PositionCalculationCustomization positionCalculationCustomization;
 
     private ConfettiAnimationListener animationListener;
 
@@ -290,6 +291,17 @@ public class ConfettiManager {
             float targetVelocityYDeviation) {
         this.targetVelocityY = targetVelocityY / 1000f;
         this.targetVelocityYDeviation = targetVelocityYDeviation / 1000f;
+        return this;
+    }
+
+    /**
+     * Set the position equation that will update the confetti position according to your equation after applying
+     * velocity and acceleration.
+     * @param positionCalculationCustomization the equation that will be applied.
+     * @return the confetti manager so that the set calls can be chained.
+     */
+    public ConfettiManager setPositionCalculationCustomization(Confetto.PositionCalculationCustomization positionCalculationCustomization) {
+        this.positionCalculationCustomization = positionCalculationCustomization;
         return this;
     }
 
@@ -636,6 +648,7 @@ public class ConfettiManager {
                         random));
         confetto.setTTL(ttl);
         confetto.setFadeOut(fadeOutInterpolator);
+        confetto.setPositionCalculationCustomization(positionCalculationCustomization);
     }
 
     private float getVarianceAmount(float base, float deviation, Random random) {
